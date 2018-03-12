@@ -34,7 +34,7 @@ class RandomMemory:
             self.curr_capacity += 1
 
 
-class MA:
+class RMA:
     def __init__(self, session, args):
         self.learning_rate = args.learning_rate
         self.session = session
@@ -97,7 +97,7 @@ def plot_results(num_tasks_to_run, baseline_mlp, memoryadapted):
     tasks = range(1, num_tasks_to_run + 1)
     plt.plot(tasks, baseline_mlp[::-1])
     plt.plot(tasks, memoryadapted[::-1])
-    plt.legend(["Baseline-MLP", "MA-MLP"], loc='lower right')
+    plt.legend(["Baseline-MLP", "RMA"], loc='lower right')
     plt.xlabel("Number of Tasks")
     plt.ylabel("Accuracy (%)")
     plt.ylim([1, 100])
@@ -112,9 +112,9 @@ def main(_):
         print("\nParameters used:", args, "\n")
 
         # We create the baseline model
-        baseline_model = MA(sess, args)
+        baseline_model = RMA(sess, args)
         # We create the memory adapted model
-        ma_model = MA(sess, args)
+        rma_model = RMA(sess, args)
 
         # Permuted MNIST
         # Generate the tasks specifications as a list of random permutations of the input pixels.
@@ -130,9 +130,9 @@ def main(_):
         time_needed_baseline = round(end - start)
         print("Training time elapsed: ", time_needed_baseline, "s")
 
-        print("\nMemory adapted MLP training...")
+        print("\nMemory adapted (RMA) training...")
         start = time.time()
-        last_performance_ma = training(ma_model, mnist, task_permutation, True)
+        last_performance_ma = training(rma_model, mnist, task_permutation, True)
         end = time.time()
         time_needed_ma = round(end - start)
         print("Training time elapsed: ", time_needed_ma, "s")
@@ -189,9 +189,9 @@ if __name__ == '__main__':
 
     parser.add_argument('--num_tasks_to_run', type=int, default=20,
                         help='Number of task to run')
-    parser.add_argument('--memory_size', type=int, default=50000,
+    parser.add_argument('--memory_size', type=int, default=15000,
                         help='Memory size')
-    parser.add_argument('--memory_each', type=int, default=200,
+    parser.add_argument('--memory_each', type=int, default=1000,
                         help='Add to memory after these number of steps')
     parser.add_argument('--batch_size', type=int, default=32,
                         help='Size of batch for updates')
